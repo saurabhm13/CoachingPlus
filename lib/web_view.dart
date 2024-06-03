@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class WebViewScreen extends StatefulWidget {
   const WebViewScreen({super.key});
@@ -12,15 +11,22 @@ class WebViewScreen extends StatefulWidget {
 class _WebViewScreenState extends State<WebViewScreen> {
   late InAppWebViewController webViewController;
 
+  PullToRefreshController? pullToRefreshController;
+
   @override
   void initState() {
     super.initState();
-    _requestPermissions();
-  }
 
-  Future<void> _requestPermissions() async {
-    await Permission.camera.request();
-    await Permission.microphone.request();
+    pullToRefreshController = PullToRefreshController(
+      options: PullToRefreshOptions(
+        color: Colors.blue,
+      ),
+      onRefresh: () async {
+        if (webViewController != null) {
+          webViewController.reload();
+        }
+      },
+    );
   }
 
   @override
@@ -43,20 +49,30 @@ class _WebViewScreenState extends State<WebViewScreen> {
             initialOptions: InAppWebViewGroupOptions(
               crossPlatform: InAppWebViewOptions(
                 javaScriptEnabled: true,
-                cacheEnabled: true,  // Enable caching
-                clearCache: false,  // Do not clear cache on launch
+                cacheEnabled: true,
+                clearCache: false,
+                userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
               ),
               android: AndroidInAppWebViewOptions(
                 useHybridComposition: true,
-                cacheMode: AndroidCacheMode.LOAD_CACHE_ELSE_NETWORK,  // Use cache when available
+                cacheMode: AndroidCacheMode.LOAD_CACHE_ELSE_NETWORK,
               ),
               ios: IOSInAppWebViewOptions(
                 sharedCookiesEnabled: true,
                 enableViewportScale: true,
               ),
             ),
-            onWebViewCreated: (controller) {
+            pullToRefreshController: pullToRefreshController,
+            onWebViewCreated: (controller) async {
               webViewController = controller;
+            },
+            onLoadStop: (controller, url) async {
+              pullToRefreshController?.endRefreshing();
+            },
+            onProgressChanged: (controller, progress) {
+              if (progress == 100) {
+                pullToRefreshController?.endRefreshing();
+              }
             },
             androidOnPermissionRequest: (controller, origin, resources) async {
               return PermissionRequestResponse(
