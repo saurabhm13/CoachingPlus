@@ -40,6 +40,9 @@ dependencies:
   permission_handler: ^11.3.1
   flutter_inappwebview: ^5.4.3
   file_picker: ^5.0.1
+  flutter_downloader: ^1.11.7
+  firebase_core: ^2.32.0
+  firebase_messaging: ^14.9.4
 
 dev_dependencies:
   flutter_test:

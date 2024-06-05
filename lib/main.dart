@@ -1,9 +1,19 @@
+import 'package:coachingplusapp/firebase_api.dart';
 import 'package:coachingplusapp/web_view.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import 'firebase_options.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  await FirebaseApi().init();
 
   await Permission.camera.request();
   await Permission.microphone.request();
