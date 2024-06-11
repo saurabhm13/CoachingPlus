@@ -15,10 +15,6 @@ Future<void> main() async {
   );
   await FirebaseApi().init();
 
-  await Permission.camera.request();
-  await Permission.microphone.request();
-  await Permission.storage.request();
-  await Permission.manageExternalStorage.request();
   runApp(const MyApp());
 }
 
@@ -30,7 +26,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'CoachingPlus',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
